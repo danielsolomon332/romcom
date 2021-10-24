@@ -11,8 +11,9 @@ var viewHomeButton = document.querySelector(".home-button");
 var homeView = document.querySelector(".home-view")
 var formView = document.querySelector(".form-view")
 var savedView = document.querySelector(".saved-view")
+var savedCoverSection = document.querySelector(".saved-covers-section")
 
-var tempBook;
+var currentCover;
 
 // ITERATION 0: This code randomizes book on home page load, currently turned off to troubleshoot iteration 3:
 window.addEventListener("load", changeCover);
@@ -27,7 +28,7 @@ function changeCover() {
   word2 = descriptors[Math.floor(Math.random() * descriptors.length)]
   currentDescriptors.innerText = "A tale of " + word1 + " and " + word2;
 
-  tempBook = new Cover(currentCoverImage.src, currentTitle.innerText, word1, word2)
+  currentCover = new Cover(currentCoverImage.src, currentTitle.innerText, word1, word2)
 
 };
 
@@ -37,7 +38,6 @@ function makeNewPage() {
   homeView.classList.add("hidden")
   formView.classList.remove("hidden")
   viewSavedButton.classList.add("hidden")
-  makeYourOwnCoverButton.classList.remove("hidden")
   viewHomeButton.classList.remove("hidden")
   saveCoverButton.classList.add("hidden")
   showNewRandomCoverButton.classList.add("hidden")
@@ -52,24 +52,27 @@ function viewSavedPage() {
   showNewRandomCoverButton.classList.add("hidden")
   viewHomeButton.classList.remove("hidden")
 //ITERATION 4 STUFF:
-  document.querySelector(".saved-covers-section").innerHTML = "";
+  miniBook()
+};
+function miniBook() {
+  savedCoverSection.innerHTML = "";
   for (var i = 0; i < savedCovers.length; i++) {
-    document.querySelector(".saved-covers-section").insertAdjacentHTML('beforeend', `
-      <div class="mini-cover cover-${[i]}">
-        <img class="mini-cover" src="${savedCovers[i].cover}">
+    savedCoverSection.innerHTML += `
+      <section class="mini-cover cover-${[i]}">
+        <img class="mini-cover" id= "${savedCovers[i].id}" src="${savedCovers[i].cover}">
         <h2 class="cover-title">${savedCovers[i].title}</h2>
         <h3 class="tagline">A tale of <span class="tagline-1">${savedCovers[i].tagline1}</span> and <span class="tagline-2">${savedCovers[i].tagline2}</span></h3>
         <img class="overlay" src="./assets/overlay.png">
-      </div>
-      `)
+      </section>
+      `
   }
-};
-
+}
 viewHomeButton.addEventListener("click", viewHomePage);
 function viewHomePage() {
   homeView.classList.remove("hidden")
   formView.classList.add("hidden")
   savedView.classList.add("hidden")
+  viewSavedButton.classList.remove("hidden")
   saveCoverButton.classList.remove("hidden")
   showNewRandomCoverButton.classList.remove("hidden")
   viewHomeButton.classList.add("hidden")
@@ -89,13 +92,13 @@ var savedCovers = [
 formMakeBookButton.addEventListener("click", createFormMakeBook);
 function createFormMakeBook() {
   event.preventDefault()
-
+  viewHomePage()
   covers.push(formNewCoverImage.value)
   titles.push(formNewTitleText.value)
   descriptors.push(formNewFirstDescriptorText.value, formNewSecondDescriptorText.value)
 
-  tempBook = new Cover(formNewCoverImage.value, formNewTitleText.value, formNewFirstDescriptorText.value, formNewSecondDescriptorText.value)
-  savedCovers.push(tempBook)
+  currentCover = new Cover(formNewCoverImage.value, formNewTitleText.value, formNewFirstDescriptorText.value, formNewSecondDescriptorText.value)
+  savedCovers.push(currentCover)
 
   currentCoverImage.src = covers[covers.length - 1];
   currentTitle.innerText = titles[titles.length - 1];
@@ -109,27 +112,45 @@ function createFormMakeBook() {
   //   //} else {
   // }
 
-  viewHomePage()
-
 }
+
+function saveCurrentCover() {
+  if (!savedCovers.includes(currentCover)) {
+    savedCovers.push(currentCover);
+  }
+};
 
 // ITERATION 4
 saveCoverButton.addEventListener("click", saveCover);
 function saveCover() {
-  var isDuplicate = false;
-  for (var i = 0; i < savedCovers.length; i++) {
-    if (savedCovers[i].title === tempBook.title || savedCovers[i].cover === tempBook.cover || savedCovers[i].tagline1 === tempBook.tagline1 || savedCovers[i].tagline2 === tempBook.tagline2) {
-        console.log("You cannot save duplicate book covers. Confused on how this application works? Check out the Read Me!")
-        isDuplicate = true;
-      }
-    }
-  if (!isDuplicate) {
-      savedCovers.push(tempBook)
-    }
+  if (!savedCovers.includes(currentCover)) {
+    savedCovers.push(currentCover);
   }
+};
+  // var isDuplicate = false;
+  // for (var i = 0; i < savedCovers.length; i++) {
+  //   if (savedCovers[i].title === currentCover.title && savedCovers[i].cover === currentCover.cover && savedCovers[i].tagline1 === currentCover.tagline1 && savedCovers[i].tagline2 === currentCover.tagline2) {
+  //       console.log("You cannot save duplicate book covers. Confused on how this application works? Check out the Read Me!")
+  //       isDuplicate = true;
+  //     }
+  //   }
+  // if (!isDuplicate) {
+  //     savedCovers.push(currentCover)
+  //   }
+
+// ITERATION 5
+savedCoverSection.addEventListener("dblclick", removeCover);
+function removeCover() {
+  console.log("message")
+  for (var i = 0; i < savedCovers.length; i++) {
+    if (`${savedCovers[i].id}` === event.target.id) {
+      savedCovers.splice(i, 1)
+    }
+  viewSavedPage()
+  }
+}
 
 ///We never ended up using this variable below, why is it here?
-var currentCover;
 
 // Add your event listeners here 👇 (*********ADD FALSE IF IT DOESN'T WORK)
 
