@@ -1,4 +1,4 @@
-var currentCoverImage = document.querySelector('.cover-image'); 
+var currentCoverImage = document.querySelector('.cover-image');
 var currentTitle = document.querySelector('.cover-title');
 var currentDescriptors = document.querySelector('.tagline');
 var currentDescriptor1 = document.querySelector('.tagline-1');
@@ -43,6 +43,7 @@ function changeCover() {
 function makeNewPage() {
   homeView.classList.add('hidden');
   formView.classList.remove('hidden');
+  savedView.classList.add('hidden');
   viewSavedButton.classList.add('hidden');
   viewHomeButton.classList.remove('hidden');
   saveCoverButton.classList.add('hidden');
